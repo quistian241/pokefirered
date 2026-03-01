@@ -235,6 +235,7 @@ gBattleScriptsForMoveEffects::
 	.4byte BattleScript_EffectCalmMind               @ EFFECT_CALM_MIND
 	.4byte BattleScript_EffectDragonDance            @ EFFECT_DRAGON_DANCE
 	.4byte BattleScript_EffectCamouflage             @ EFFECT_CAMOUFLAGE
+	.4byte BattleScript_EffectMeditatePlus           @ EFFECT_MEDITATE_PLUS
 
 BattleScript_EffectHit::
 	jumpifnotmove MOVE_SURF, BattleScript_HitFromAtkCanceler
@@ -2797,6 +2798,36 @@ BattleScript_EffectCamouflage::
 	printstring STRINGID_PKMNCHANGEDTYPE
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd
+
+BattleScript_EffectMeditatePlus::
+    attackcanceler
+    attackstring
+    ppreduce
+    jumpifstat BS_ATTACKER, CMP_LESS_THAN, STAT_ATK, MAX_STAT_STAGE, BattleScript_MeditatePlusDoMoveAnim
+    jumpifstat BS_ATTACKER, CMP_EQUAL, STAT_SPDEF, MAX_STAT_STAGE, BattleScript_CantRaiseMultipleStats
+
+BattleScript_MeditatePlusDoMoveAnim::
+    attackanimation
+    waitanimation
+    setbyte sSTAT_ANIM_PLAYED, FALSE
+    playstatchangeanimation BS_ATTACKER, BIT_ATK | BIT_SPDEF, 0
+
+    setstatchanger STAT_ATK, 1, FALSE
+    statbuffchange MOVE_EFFECT_AFFECTS_USER | STAT_CHANGE_ALLOW_PTR, BattleScript_MeditatePlusTrySpDef
+    jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_INCREASE, BattleScript_MeditatePlusTrySpDef
+    printfromtable gStatUpStringIds
+    waitmessage B_WAIT_TIME_LONG
+
+BattleScript_MeditatePlusTrySpDef::
+    setstatchanger STAT_SPDEF, 1, FALSE
+    statbuffchange MOVE_EFFECT_AFFECTS_USER | STAT_CHANGE_ALLOW_PTR, BattleScript_MeditatePlusEnd
+    jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_INCREASE, BattleScript_MeditatePlusEnd
+    printfromtable gStatUpStringIds
+    waitmessage B_WAIT_TIME_LONG
+
+BattleScript_MeditatePlusEnd::
+    goto BattleScript_MoveEnd
+
 
 BattleScript_FaintAttacker::
 	playfaintcry BS_ATTACKER

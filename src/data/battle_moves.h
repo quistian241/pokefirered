@@ -1146,7 +1146,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
 
     [MOVE_ROCK_THROW] =
     {
-        .effect = EFFECT_HIT,
+        .effect = EFFECT_HIGH_CRITICAL,
         .power = 100,
         .type = TYPE_ROCK,
         .accuracy = 85,
@@ -1250,7 +1250,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
 
     [MOVE_MEDITATE] =
     {
-        .effect = EFFECT_ATTACK_UP,
+        .effect = EFFECT_MEDITATE_PLUS,
         .power = 0,
         .type = TYPE_PSYCHIC,
         .accuracy = 0,
